@@ -1,0 +1,1 @@
+Mostly just a personal project. I didn't like how cachyOS handled things with arch-update, so i rewrote it in rust and simplified it to only check for pacman upgrades and to only serve as a notification and nothing more.

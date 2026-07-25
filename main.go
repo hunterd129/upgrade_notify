@@ -16,7 +16,7 @@ func main() {
 		body = "Network error: failed to establish remote connection"
 	} else {
 		updateCount := 0
-		for _, line := range strings.Split(string(out), "\n") {
+		for line := range strings.SplitSeq(string(out), "\n") {
 			if strings.TrimSpace(line) != "" {
 				updateCount++
 			}
@@ -33,9 +33,16 @@ func main() {
 	if err != nil {
 		return
 	}
-	defer conn.Close()
+	defer func() {
+		_ = conn.Close()
+	}()
 
 	obj := conn.Object("org.freedesktop.Notifications", "/org/freedesktop/Notifications")
+
+	hints := map[string]dbus.Variant{
+		"image-path": dbus.MakeVariant("dialog-warning-symbolic"),
+		"urgency":    dbus.MakeVariant(uint8(2)),
+	}
 
 	_ = obj.Call(
 		"org.freedesktop.Notifications.Notify", 0,
@@ -45,7 +52,7 @@ func main() {
 		"Upgrade Notify",
 		body,
 		[]string{},
-		map[string]dbus.Variant{},
-		int32(-1),
+		hints,
+		int32(0),
 	)
 }

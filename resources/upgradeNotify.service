@@ -1,0 +1,9 @@
+[Unit]
+Description=Upgrade notifier daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/sleep 15
+ExecStart=%h/.local/bin/upgradeNotify

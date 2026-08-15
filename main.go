@@ -12,9 +12,13 @@ func main() {
 	out, err := exec.Command("checkupdates").Output()
 
 	var body string
+	var imagePath string
+
 	if err != nil {
 		body = "Network error: failed to establish remote connection"
+		imagePath = "network-wireless-disabled-symbolic"
 	} else {
+		imagePath = "alarm-symbolic"
 		updateCount := 0
 		for line := range strings.SplitSeq(string(out), "\n") {
 			if strings.TrimSpace(line) != "" {
@@ -40,7 +44,7 @@ func main() {
 	obj := conn.Object("org.freedesktop.Notifications", "/org/freedesktop/Notifications")
 
 	hints := map[string]dbus.Variant{
-		"image-path": dbus.MakeVariant("dialog-warning-symbolic"),
+		"image-path": dbus.MakeVariant(imagePath),
 		"urgency":    dbus.MakeVariant(uint8(2)),
 	}
 

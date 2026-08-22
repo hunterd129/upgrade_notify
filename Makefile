@@ -1,6 +1,6 @@
 .PHONY: build clean run test install
 
-BINARY_NAME=upgradeNotify
+BINARY_NAME=upgrNotif
 
 build:
 	go build -ldflags="-s -w" -o bin/$(BINARY_NAME) .

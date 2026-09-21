@@ -6,4 +6,4 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 ExecStartPre=/usr/bin/sleep 15
-ExecStart=%h/.local/bin/upgradeNotify
+ExecStart=%h/.local/bin/upgrNotif

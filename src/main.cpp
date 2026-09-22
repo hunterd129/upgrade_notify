@@ -5,7 +5,7 @@
 #include <utility>
 #include <libnotify/notify.h>
 
-struct PcloseDeleter {
+struct pcloseDeleter {
     void operator()(FILE* pipe) const {
         if (pipe) {
             pclose(pipe);
@@ -13,11 +13,11 @@ struct PcloseDeleter {
     }
 };
 
-std::pair<std::string, std::string> get_update_status() {
+std::pair<std::string, std::string> getUpdateStatus() {
     std::array<char, 4096> buffer;
     std::string result;
 
-    std::unique_ptr<FILE, PcloseDeleter> pipe(
+    std::unique_ptr<FILE, pcloseDeleter> pipe(
             popen("checkupdates 2>/dev/null", "r")
             );
 
@@ -25,7 +25,7 @@ std::pair<std::string, std::string> get_update_status() {
         return {"Network error: Failed to establish remote connection", "network-wireless-disabled-symbolic"};
     }
 
-    size_t line_count = 0;
+    size_t lineCount = 0;
     while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
         result += buffer.data();
     }
@@ -36,16 +36,16 @@ std::pair<std::string, std::string> get_update_status() {
     std::string line;
     while (std::getline(stream, line)) {
         if (!line.empty() && line.find_first_not_of(" \t\n\r") != std::string::npos) {
-            line_count++;
+            lineCount++;
         }
     }
 
-    if (status != 0 && line_count == 0) {
+    if (status != 0 && lineCount == 0) {
         return {"Network error: Failed to establish remote connection", "network-wireless-disabled-symbolic"};
     }
 
-    if (line_count > 0) {
-        return {std::to_string(line_count) + " updates available", "alarm-symbolic"};
+    if (lineCount > 0) {
+        return {std::to_string(lineCount) + " updates available", "alarm-symbolic"};
     }
 
     return {"System up to date", "alarm-symbolic"};
@@ -56,12 +56,12 @@ int main() {
         return 1;
     }
 
-    auto [body, status_icon] = get_update_status();
+    auto [body, statusIcon] = getUpdateStatus();
 
     NotifyNotification *notification = notify_notification_new(
         "Upgrade Notify",
         body.c_str(),
-        status_icon.c_str()
+        statusIcon.c_str()
         );
 
     notify_notification_set_urgency(notification, NOTIFY_URGENCY_CRITICAL);

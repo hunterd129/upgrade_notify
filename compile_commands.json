@@ -1,0 +1,27 @@
+[
+  {
+    "file": "src/main.cpp",
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-O3",
+      "-I/usr/include/gdk-pixbuf-2.0",
+      "-I/usr/include/glycin-2",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-I/usr/include/gio-unix-2.0",
+      "-I/usr/include/glib-2.0",
+      "-I/usr/lib/glib-2.0/include",
+      "-DWITH_GZFILEOP",
+      "-I/usr/include/libmount",
+      "-I/usr/include/blkid",
+      "-I/usr/include/sysprof-6",
+      "-pthread",
+      "src/main.cpp",
+      "-o",
+      "bin/upgrNotif"
+    ],
+    "directory": "/home/hunter/Projects/upgradeNotify",
+    "output": "bin/upgrNotif"
+  }
+]

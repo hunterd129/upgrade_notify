@@ -1,13 +1,16 @@
-CXX := clang++
-CXXFLAGS := -std=c++17 -O3
-CPPFLAGS := $(shell pkg-config --cflags libnotify)
+ZIG ?= zig
+ZIGFLAGS ?= -O small
 LDLIBS := $(shell pkg-config --libs libnotify)
 
 TARGET := bin/upgrNotif
-SOURCE := src/main.cpp
+SOURCE := src/main.zig
 
-$(TARGET): $(SOURCE)
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(SOURCE) -o $(TARGET) $(LDLIBS)
+$(TARGET): $(SOURCE) | bin
+	$(ZIG) build-exe $(SOURCE) $(ZIGFLAGS) -femit-bin=$(TARGET) $(LDLIBS) -lc
+
+
+bin:
+	mkdir -p bin
 
 .PHONY: clean
 clean:

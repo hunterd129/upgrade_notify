@@ -7,23 +7,28 @@ const NotifyNotification = opaque {};
 
 extern fn notify_init(app_name: [*:0]const u8) c_int;
 extern fn notify_uninit() void;
+
 extern fn notify_notification_new(
     summary: [*:0]const u8,
     body: ?[*:0]const u8,
     icon: ?[*:0]const u8,
 ) ?*NotifyNotification;
+
 extern fn notify_notification_set_urgency(
     notification: *NotifyNotification,
     urgency: NotifyUrgency,
 ) void;
+
 extern fn notify_notification_set_app_icon(
     notification: *NotifyNotification,
     icon: [*:0]const u8,
 ) void;
+
 extern fn notify_notification_show(
     notification: *NotifyNotification,
     error_out: ?*anyopaque,
 ) c_int;
+
 extern fn g_object_unref(object: *anyopaque) void;
 
 const Status = struct {
@@ -44,9 +49,9 @@ fn getUpdateStatus(allocator: std.mem.Allocator, io: std.Io) Status {
     defer allocator.free(result.stdout);
     defer allocator.free(result.stderr);
 
-    const exited_zero = switch (result.term) {
-        .exited => |code| code == 0,
-        else => false,
+    const exit_code: ?u8 = switch (result.term) {
+        .exited => |code| code,
+        else => null,
     };
 
     var line_count: usize = 0;
@@ -55,13 +60,6 @@ fn getUpdateStatus(allocator: std.mem.Allocator, io: std.Io) Status {
         if (std.mem.trim(u8, line, " \t").len > 0) {
             line_count += 1;
         }
-    }
-
-    if (!exited_zero and line_count == 0) {
-        return .{
-            .body = "Network error: Failed to establish remote connection",
-            .icon = "network-wireless-disabled-symbolic",
-        };
     }
 
     if (line_count > 0) {
@@ -75,6 +73,13 @@ fn getUpdateStatus(allocator: std.mem.Allocator, io: std.Io) Status {
             .body = msg,
             .icon = "alarm-symbolic",
             .owned = true,
+        };
+    }
+
+    if (exit_code != null and exit_code.? != 0 and exit_code.? != 2 or (exit_code == null and line_count == 0)) {
+        return .{
+            .body = "Network error: Failed to establish remote connection",
+            .icon = "network-wireless-disabled-symbolic",
         };
     }
 
